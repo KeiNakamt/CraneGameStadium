@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class testScript : MonoBehaviour
+public class threeArmCatcher : MonoBehaviour
 {
     [SerializeField] public GameObject mecha;
     [SerializeField] public GameObject ropeJoint;
