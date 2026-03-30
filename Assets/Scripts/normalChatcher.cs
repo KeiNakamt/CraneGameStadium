@@ -24,6 +24,8 @@ public class normalCatcher : MonoBehaviour
     private HingeJoint hingeR; 
 
     private Vector3 homePos;
+
+    private Tween descendTween;
     private Tween currentTween;
 
 
@@ -67,8 +69,22 @@ public class normalCatcher : MonoBehaviour
     }
 
     // Tweenで動かす際の関数を定義しておく
-    // やらせることは、X,Z軸移動後のメカの座標を引数に入れ、ホームポジションへ戻すこと
-    public void PlayMoveBack(int backMode)
+    // やらせることは、掴んで引き上げてX,Z軸移動後のメカの座標を引数に入れ、ホームポジションへ戻すこと
+    public void StartDescend()
+    {
+        // 下降制限、爪と景品または壁の衝突、メカ本体の衝突時に停止
+
+        float tDown = Mathf.Abs(craneRoot.position.y - descendLimitY) / moveSpeedY;
+
+        OpenArm();
+        descendTween = craneRoot.DOMoveY(descendLimitY, tDown).SetEase(Ease.InOutSine);
+
+        descendTween.OnComplete(() =>
+        {
+            CatchAndReturn(backMode);
+        });
+    }
+    public void CatchAndReturn(int backMode)
     {
         // この関数では、引数backModeの値に応じて、下降→上昇後の動きが変わる。
         // 0では現在位置から初期位置までの最短距離を直線状に進み、
@@ -80,7 +96,6 @@ public class normalCatcher : MonoBehaviour
         // 設定されていない場合は筐体の中心座標を設定。
         Vector3 secondTargetPos = new Vector3(0,0,0);
 
-        float tDown = Mathf.Abs(craneRoot.position.y - descendLimitY) / moveSpeedY;
         float tUp = Mathf.Abs(descendLimitY - homePos.y) / moveSpeedY;
         
         float tBack = Vector3.Distance(new Vector3(craneRoot.position.x, 0, craneRoot.position.z), 
@@ -96,13 +111,7 @@ public class normalCatcher : MonoBehaviour
                                          new Vector3(secondTarget.x, 0, secondTarget.z)) / moveSpeedXZ;
 
         Sequence seq = DOTween.Sequence();
-
-        // アームを開く
-        seq.AppendCallback(() => OpenArm());
-
-        // 下降
-        seq.Append(craneRoot.DOMoveY(descendLimitY, tDown).SetEase(Ease.InOutSine));
-        
+        seq.AppendInterval(1f);
         // アームを閉じる
         seq.AppendCallback(() => CloseArm());
 
@@ -175,14 +184,32 @@ public class normalCatcher : MonoBehaviour
         }
         if(Input.GetKeyUp(KeyCode.M) && isPushX && !isPushZ)
         {
-            isPushX = true;
+            isPushZ = true;
             isSequence = true;
+        }
+        // 下降ストップボタン
+        if(Input.GetKeyDown(KeyCode.Comma) && isPushX && isPushZ)
+        {
+            descendTween.Kill();
+            CatchAndReturn(backMode);
         }
 
         if(isSequence)
         {
-            PlayMoveBack(backMode);
+            StartDescend();
             isSequence = false;
+        }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if(other.CompareTag("Prize") || other.CompareTag("Equipment"))
+        {
+            if(descendTween != null && descendTween.IsActive() && descendTween.IsPlaying())
+            {
+                descendTween.Kill();
+                CatchAndReturn(backMode);
+            }
         }
     }
 }

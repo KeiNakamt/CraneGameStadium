@@ -1594,7 +1594,7 @@ GameObject:
   - component: {fileID: 597284781}
   m_Layer: 0
   m_Name: Prize
-  m_TagString: Untagged
+  m_TagString: Prize
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2421,6 +2421,9 @@ GameObject:
   - component: {fileID: 886494619}
   - component: {fileID: 886494618}
   - component: {fileID: 886494622}
+  - component: {fileID: 886494625}
+  - component: {fileID: 886494624}
+  - component: {fileID: 886494623}
   m_Layer: 0
   m_Name: Mecha_jiku
   m_TagString: Untagged
@@ -2545,6 +2548,69 @@ MonoBehaviour:
   secondTarget: {x: 0, y: 0, z: 0}
   ArmL: {fileID: 1088452811}
   ArmR: {fileID: 1171144866}
+--- !u!65 &886494623
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 886494617}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3, y: 0.01, z: 2}
+  m_Center: {x: 0, y: -1.2, z: -0.00000008940697}
+--- !u!65 &886494624
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 886494617}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.3, y: 0.01, z: 0.4}
+  m_Center: {x: -4, y: -1.44, z: -0.00000008940697}
+--- !u!65 &886494625
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 886494617}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.3, y: 0.01, z: 0.4}
+  m_Center: {x: 4, y: -1.44, z: -0.00000008940697}
 --- !u!1 &891510125
 GameObject:
   m_ObjectHideFlags: 0
@@ -2878,7 +2944,7 @@ GameObject:
   - component: {fileID: 1003552435}
   m_Layer: 0
   m_Name: Kyoutai
-  m_TagString: Untagged
+  m_TagString: Equipment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4163,7 +4229,7 @@ GameObject:
   - component: {fileID: 1688175219}
   m_Layer: 0
   m_Name: Prize (1)
-  m_TagString: Untagged
+  m_TagString: Prize
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
