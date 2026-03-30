@@ -5,7 +5,7 @@ using UnityEngine;
 using DG.Tweening;
 using System.Runtime.InteropServices;
 
-public class normalChatcher : MonoBehaviour
+public class normalCatcher : MonoBehaviour
 {
     [SerializeField] private Transform craneRoot;
 
@@ -16,6 +16,12 @@ public class normalChatcher : MonoBehaviour
     [SerializeField] private float waitSeconds = 3f;
     [SerializeField] private int backMode = 0;
     [SerializeField] private Vector3 secondTarget;
+
+    [SerializeField] private GameObject ArmL;
+    [SerializeField] private GameObject ArmR;
+
+    private HingeJoint hingeL;
+    private HingeJoint hingeR; 
 
     private Vector3 homePos;
     private Tween currentTween;
@@ -31,6 +37,33 @@ public class normalChatcher : MonoBehaviour
     {
         if(!craneRoot) craneRoot = transform;
         homePos = craneRoot.position;
+
+        hingeL = ArmL.GetComponent<HingeJoint>();
+        hingeR = ArmR.GetComponent<HingeJoint>();
+    }
+
+    void OpenArm()
+    {
+        // アームを開く
+        JointSpring jointSpringL = hingeL.spring;
+        jointSpringL.targetPosition = 0f;
+        hingeL.spring = jointSpringL;
+
+        JointSpring jointSpringR = hingeR.spring;
+        jointSpringR.targetPosition = 0f;
+        hingeR.spring = jointSpringR;
+    }
+
+    void CloseArm()
+    {
+        // アームを閉じる
+        JointSpring jointSpringL = hingeL.spring;
+        jointSpringL.targetPosition = 50f;
+        hingeL.spring = jointSpringL;
+
+        JointSpring jointSpringR = hingeR.spring;
+        jointSpringR.targetPosition = 50f;
+        hingeR.spring = jointSpringR;
     }
 
     // Tweenで動かす際の関数を定義しておく
@@ -64,8 +97,14 @@ public class normalChatcher : MonoBehaviour
 
         Sequence seq = DOTween.Sequence();
 
+        // アームを開く
+        seq.AppendCallback(() => OpenArm());
+
         // 下降
         seq.Append(craneRoot.DOMoveY(descendLimitY, tDown).SetEase(Ease.InOutSine));
+        
+        // アームを閉じる
+        seq.AppendCallback(() => CloseArm());
 
         // 待機
         seq.AppendInterval(waitSeconds);
@@ -92,14 +131,27 @@ public class normalChatcher : MonoBehaviour
                 seq.Append(craneRoot.DOMoveX(homePos.x, tMoveST).SetEase(Ease.Linear));
                 seq.Join(craneRoot.DOMoveZ(homePos.z, tMoveST).SetEase(Ease.Linear));
 
+                seq.AppendCallback(() => OpenArm());
+                seq.AppendInterval(1f);
+
+                seq.AppendCallback(() => CloseArm());
+
                 seq.Append(craneRoot.DOMoveX(homePos.x, tBack).SetEase(Ease.Linear));
                 seq.Join(craneRoot.DOMoveZ(homePos.z, tBack).SetEase(Ease.Linear));
                 break;
         }
 
+        // 初期位置で開いて閉じる動作
+        seq.AppendCallback(() => OpenArm());
+        seq.AppendInterval(1f);
+        seq.AppendCallback(() => CloseArm());
+
         seq.OnComplete(() =>
         {
             // Debug.Log("finish");
+            isPushX = false;
+            isPushZ = false;
+            isSequence = false;
         });
         currentTween = seq;
     }
@@ -117,11 +169,11 @@ public class normalChatcher : MonoBehaviour
         }
 
 
-        if(Input.GetKey(KeyCode.M) && !isPushZ && !isSequence)
+        if(Input.GetKey(KeyCode.M) && isPushX && !isPushZ && !isSequence)
         {
             transform.position += new Vector3(0,0,moveSpeedXZ*Time.deltaTime);
         }
-        if(Input.GetKeyUp(KeyCode.M))
+        if(Input.GetKeyUp(KeyCode.M) && isPushX && !isPushZ)
         {
             isPushX = true;
             isSequence = true;
