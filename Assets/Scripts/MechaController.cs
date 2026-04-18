@@ -4,9 +4,14 @@ using UnityEditor.Timeline;
 using UnityEngine;
 using DG.Tweening;
 using System.Runtime.InteropServices;
+using UnityEngine.InputSystem;
+using System.Runtime.CompilerServices;
 
 public class MechaController : MonoBehaviour
 {
+    // コントローラーでの操作を可能にする。
+    private CraneInputs craneInputs;
+    private Vector2 moveInput;
     [SerializeField] private Transform craneHead;
     
     [Header("MechaMode")]
@@ -27,6 +32,22 @@ public class MechaController : MonoBehaviour
     {
         if(!craneHead) craneHead = transform;
         homePos = craneHead.position;
+
+        craneInputs = new CraneInputs();
+
+        craneInputs.Player.Move.performed += context => moveInput = context.ReadValue<Vector2>();
+
+        craneInputs.Player.Move.canceled += context => moveInput = Vector2.zero;
+    }
+
+    void OnEnable()
+    {
+        craneInputs.Enable();
+    }
+
+    void OnDisable()
+    {
+        craneInputs.Disable();
     }
 
     public void PlaySequenceTo(Vector3 targetXZ)
@@ -103,5 +124,11 @@ public class MechaController : MonoBehaviour
         {
             PlaySequenceTo(new Vector3(transform.position.x,0,transform.position.z));
         }
+
+        // コントローラーの操作を反映
+        Vector3 movement = new Vector3(moveInput.x , 0, moveInput.y) * moveSpeedXZ * Time.deltaTime;
+        transform.Translate(movement, Space.World);
+
+        
     }
 }

@@ -5,6 +5,9 @@ using DG.Tweening;
 
 public class threeArmCatcher : MonoBehaviour
 {
+    // コントローラーでの操作を可能にする。
+    private CraneInputs craneInputs;
+    private Vector2 moveInput;
     [SerializeField] public GameObject mecha;
     [SerializeField] public GameObject ropeJoint;
     [SerializeField] private Transform craneHead;
@@ -75,11 +78,32 @@ public class threeArmCatcher : MonoBehaviour
 
         counter = 0;
     }
+    void Awake()
+    {
+        if(!craneHead) craneHead = transform;
+        homePos = craneHead.position;
+
+        craneInputs = new CraneInputs();
+
+        craneInputs.Player.Move.performed += context => moveInput = context.ReadValue<Vector2>();
+
+        craneInputs.Player.Move.canceled += context => moveInput = Vector2.zero;
+    }
+
+    void OnEnable()
+    {
+        craneInputs.Enable();
+    }
+
+    void OnDisable()
+    {
+        craneInputs.Disable();
+    }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.S))
+        if(Input.GetKeyDown(KeyCode.S) || craneInputs.Player.Drop.WasPressedThisFrame())
         {
             //configurableJoint_mecha.xMotion = ConfigurableJointMotion.Free;
             //configurableJoint.yMotion = ConfigurableJointMotion.Free;
